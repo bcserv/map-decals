@@ -1,0 +1,7 @@
+"lightmappedgeneric" {
+    "$basetexture" "decals\custom\example\TSGKCorn512x512"
+    "$translucent" 1
+    "$decal" 1
+    "$decalscale" 1.000000
+    "$surfaceprop" "Default"
+}
