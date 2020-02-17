@@ -7,7 +7,7 @@
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
 
-#define PLUGIN_VERSION "1.1"
+#define PLUGIN_VERSION "1.2"
 
 // Admin Level Defines: Level for Allowing Temp.Spray/Temp.Remove of Decals and Level for Saving Decals/getting aim position
 #define ADMIN_LEVEL_SPRAY	ADMFLAG_CUSTOM3
@@ -31,11 +31,11 @@
 
 *****************************************************************/
 
-public Plugin:myinfo = {
-	name = "",
+public Plugin:myinfo =  {
+	name = "Map Decals", 
 	author = "Berni, Stingbyte",
-	description = "Allows admins to place any decals into the map that are defined in the the config and save them permanently for each map",
-	version = PLUGIN_VERSION,
+	description = "Allows admins to place any decals into the map that are defined in the the config and save them permanently for each map", 
+	version = PLUGIN_VERSION, 
 	url = "http://forums.alliedmods.net/showthread.php?t=69502"
 }
 
@@ -50,22 +50,22 @@ public Plugin:myinfo = {
 *****************************************************************/
 
 // ConVar Handles
-new Handle:md_version			= INVALID_HANDLE;
-new Handle:md_maxdis			= INVALID_HANDLE;
-new Handle:md_pos				= INVALID_HANDLE;
-new Handle:md_spraysound		= INVALID_HANDLE;
+new Handle:md_version = INVALID_HANDLE;
+new Handle:md_maxdis = INVALID_HANDLE;
+new Handle:md_pos = INVALID_HANDLE;
+new Handle:md_spraysound = INVALID_HANDLE;
 
 // Misc
-new Handle:hAdminMenu			= INVALID_HANDLE;
+new Handle:hAdminMenu = INVALID_HANDLE;
 
-new Handle:adt_decal_names		= INVALID_HANDLE;
-new Handle:adt_decal_paths		= INVALID_HANDLE;
-new Handle:adt_decal_precache	= INVALID_HANDLE;
+new Handle:adt_decal_names = INVALID_HANDLE;
+new Handle:adt_decal_paths = INVALID_HANDLE;
+new Handle:adt_decal_precache = INVALID_HANDLE;
 
-new Handle:adt_decal_id			= INVALID_HANDLE;
-new Handle:adt_decal_position	= INVALID_HANDLE;
+new Handle:adt_decal_id = INVALID_HANDLE;
+new Handle:adt_decal_position = INVALID_HANDLE;
 
-new String:mapName[64];
+new String:mapName[PLATFORM_MAX_PATH];
 new String:path_decals[PLATFORM_MAX_PATH];
 new String:path_mapdecals[PLATFORM_MAX_PATH];
 
@@ -82,21 +82,21 @@ new String:path_mapdecals[PLATFORM_MAX_PATH];
 public OnPluginStart() {
 	
 	// Commands
-	RegAdminCmd("sm_paintdecal",	Command_PaintDecal, 	ADMIN_LEVEL_SPRAY, 	"Sprays a Decal by <name | id> (names specified in config)");
-	RegAdminCmd("sm_removedecal",	Command_RemoveDecal, 	ADMIN_LEVEL_SPRAY, 	"Removes a Decal whilst aiming at it, [all] removes all Decals (on current Map), [id] removes a Decal by id, [last] removes last painted Decal, [name] removes all Decals by decalname (on current Map)");
-	RegAdminCmd("sm_listdecal",		Command_ListDecal, 		ADMIN_LEVEL_SPRAY, 	"Shows the name of a Decal whilst aiming at it, [all] lists all Decal names available, [id] lists a Decal by id, [last] lists the last painted Decal (on current Map), [map] lists all Decals painted (on current Map), [name] lists all Decals by that Name painted (on current Map), [saved] lists all Decals saved in config File");
-	RegAdminCmd("sm_savedecal",		Command_SaveDecal, 		ADMIN_LEVEL_SAVE, 	"Saves a Decal to the config whilst aiming at it, [all] saves all Decals (on current Map), [id] saves a Decal by id, [last] saves last painted Decal, [name] saves all Decals by decalname (on current Map)");
-	RegAdminCmd("sm_aimpos",		Command_GetAimPos, 		ADMIN_LEVEL_SAVE, 	"Shows the position you are currently aiming at");
-	RegAdminCmd("sm_decalmenu",		Command_DecalMenu,		ADMIN_LEVEL_SPRAY,	"Shows the Map Decals Menu");
+	RegAdminCmd("sm_paintdecal", Command_PaintDecal, ADMIN_LEVEL_SPRAY, "Sprays a Decal by <name | id> (names specified in config)");
+	RegAdminCmd("sm_removedecal", Command_RemoveDecal, ADMIN_LEVEL_SPRAY, "Removes a Decal whilst aiming at it, [all] removes all Decals (on current Map), [id] removes a Decal by id, [last] removes last painted Decal, [name] removes all Decals by decalname (on current Map)");
+	RegAdminCmd("sm_listdecal", Command_ListDecal, ADMIN_LEVEL_SPRAY, "Shows the name of a Decal whilst aiming at it, [all] lists all Decal names available, [id] lists a Decal by id, [last] lists the last painted Decal (on current Map), [map] lists all Decals painted (on current Map), [name] lists all Decals by that Name painted (on current Map), [saved] lists all Decals saved in config File");
+	RegAdminCmd("sm_savedecal", Command_SaveDecal, ADMIN_LEVEL_SAVE, "Saves a Decal to the config whilst aiming at it, [all] saves all Decals (on current Map), [id] saves a Decal by id, [last] saves last painted Decal, [name] saves all Decals by decalname (on current Map)");
+	RegAdminCmd("sm_aimpos", Command_GetAimPos, ADMIN_LEVEL_SAVE, "Shows the position you are currently aiming at");
+	RegAdminCmd("sm_decalmenu", Command_DecalMenu, ADMIN_LEVEL_SPRAY, "Shows the Map Decals Menu");
 	
 	// ConVars
-	md_version		= CreateConVar("md_version", PLUGIN_VERSION, "Map Decals plugin version", FCVAR_DONTRECORD|FCVAR_PLUGIN|FCVAR_NOTIFY);
+	md_version = CreateConVar("md_version", PLUGIN_VERSION, "Map Decals plugin version", FCVAR_DONTRECORD | FCVAR_NOTIFY);
 	// Set it to the correct version, in case the plugin gets updated...
 	SetConVarString(md_version, PLUGIN_VERSION);
-
-	md_maxdis		= CreateConVar("md_decal_dista", "50.0", "How far away from the Decals position it will be traced to and check distance to prevent painting a Decal over another");
-	md_pos			= CreateConVar("md_decal_printpos", "1", "Turns on/off printing out of decal positions");
-	md_spraysound	= CreateConVar("md_decal_spraysound", "player/sprayer.wav", "Path to the spray sound used by map-decals plugin");
+	
+	md_maxdis = CreateConVar("md_decal_dista", "50.0", "How far away from the Decals position it will be traced to and check distance to prevent painting a Decal over another");
+	md_pos = CreateConVar("md_decal_printpos", "1", "Turns on/off printing out of decal positions");
+	md_spraysound = CreateConVar("md_decal_spraysound", "player/sprayer.wav", "Path to the spray sound used by map-decals plugin");
 	
 	// Create our dynamic arrays we need for the keyvalues/decal data
 	adt_decal_names = CreateArray(64);
@@ -116,19 +116,22 @@ public OnPluginStart() {
 }
 
 public OnLibraryRemoved(const String:name[]) {
-
+	
 	if (StrEqual(name, "adminmenu")) {
 		hAdminMenu = INVALID_HANDLE;
 	}
 }
 
 public OnMapStart() {
-
+	
 	GetCurrentMap(mapName, sizeof(mapName));
-
+	GetMapDisplayName(mapName, mapName, sizeof(mapName));
+	
 	BuildPath(Path_SM, path_decals, sizeof(path_decals), "configs/map-decals/decals.cfg");
 	BuildPath(Path_SM, path_mapdecals, sizeof(path_mapdecals), "configs/map-decals/maps/%s.cfg", mapName);
-
+	
+	
+	
 	ReadDecals(-1, READ);
 	
 	decl String:spraySound[PLATFORM_MAX_PATH];
@@ -137,10 +140,8 @@ public OnMapStart() {
 	AddFileToDownloadsTable(spraySound);
 	
 	// Precache Spray Sound
-	if (!IsSoundPrecached(spraySound)) {
-		if (!PrecacheSound(spraySound, false)) {
-			LogMessage("PrecacheSound failed: %s", spraySound);
-		}
+	if (!PrecacheSound(spraySound, false)) {
+		LogMessage("PrecacheSound failed: %s", spraySound);
 	}
 }
 
@@ -161,7 +162,7 @@ public OnClientPostAdminCheck(client) {
 	decl id, precache;
 	
 	new size = GetArraySize(adt_decal_id);
-	for (new i=0; i<size; ++i) {
+	for (new i = 0; i < size; ++i) {
 		id = GetArrayCell(adt_decal_id, i);
 		precache = GetArrayCell(adt_decal_precache, id);
 		GetArrayArray(adt_decal_position, i, _:position);
@@ -172,10 +173,10 @@ public OnClientPostAdminCheck(client) {
 
 // Menu (Mostly taken from Wiki)
 public OnAdminMenuReady(Handle:topmenu) {
-
+	
 	/* Block us from being called twice */
 	if (topmenu == hAdminMenu) {
-
+		
 		return;
 	}
 	
@@ -185,13 +186,13 @@ public OnAdminMenuReady(Handle:topmenu) {
 	/* Find the "Server Commands" category */
 	new TopMenuObject:server_commands = FindTopMenuCategory(hAdminMenu, ADMINMENU_SERVERCOMMANDS);
 	
-	AddToTopMenu(hAdminMenu,
-			"sm_decalmenu",
-			TopMenuObject_Item,
-			AdminMenu_MapDecals,
-			server_commands,
-			"sm_decalmenu",
-			ADMIN_LEVEL_SPRAY);
+	AddToTopMenu(hAdminMenu, 
+		"sm_decalmenu", 
+		TopMenuObject_Item, 
+		AdminMenu_MapDecals, 
+		server_commands, 
+		"sm_decalmenu", 
+		ADMIN_LEVEL_SPRAY);
 }
 
 
@@ -220,7 +221,7 @@ public Action:Command_PaintDecal(client, args) {
 	if (id == 0 || id > GetArraySize(adt_decal_names)) {
 		id = FindStringInArrayCase(adt_decal_names, decalName, false);
 	}
-	else{
+	else {
 		id--;
 		GetArrayString(adt_decal_names, id, decalName, sizeof(decalName));
 	}
@@ -238,7 +239,7 @@ public Action:Command_PaintDecal(client, args) {
 	
 	if (GetClientAimTargetEx(client, pos) >= 0) {
 		new size = GetArraySize(adt_decal_id);
-		for (new i=0; i<size; ++i) {
+		for (new i = 0; i < size; ++i) {
 			GetArrayArray(adt_decal_position, i, _:position);
 			if (GetVectorDistance(pos, position) <= MaxDis) {
 				ReplyToCommand(client, "%t", "error_another_decal", COLOR_DEFAULT, COLOR_GREEN, COLOR_DEFAULT);
@@ -259,13 +260,13 @@ public Action:Command_PaintDecal(client, args) {
 		PushArrayCell(adt_decal_id, id);
 		PushArrayArray(adt_decal_position, _:pos);
 		size = GetArraySize(adt_decal_id);
-		ReplyToCommand(client, "%t", "paintdecal_aim",COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
+		ReplyToCommand(client, "%t", "paintdecal_aim", COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
 		LogAction(client, -1, "\"%L\" painted Decal \"%s\" on Map \"%s\" (Position: %f, %f, %f)", client, decalName, mapName, pos[0], pos[1], pos[2]);
 		
 		new DecalPos = GetConVarInt(md_pos);
 		
 		if (DecalPos) {
-			ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, pos[0], pos[1], pos[2]);
+			ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, pos[0], pos[1], pos[2]);
 		}
 	}
 	else {
@@ -276,7 +277,7 @@ public Action:Command_PaintDecal(client, args) {
 }
 
 public Action:Command_RemoveDecal(client, args) {
-
+	
 	decl String:decalName[64];
 	decl Float:position[3];
 	new size = GetArraySize(adt_decal_id);
@@ -290,21 +291,21 @@ public Action:Command_RemoveDecal(client, args) {
 		decl Float:pos[3];
 		if (GetClientAimTargetEx(client, pos) >= 0) {
 			new Float:MaxDis = GetConVarFloat(md_maxdis);
-			for (new i=0; i<size; ++i) {
+			for (new i = 0; i < size; ++i) {
 				GetArrayArray(adt_decal_position, i, _:position);
 				if (GetVectorDistance(pos, position) <= MaxDis) {
 					new decal = GetArrayCell(adt_decal_id, i);
 					GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
 					RemoveFromArray(adt_decal_id, i);
 					RemoveFromArray(adt_decal_position, i);
-					ReplyToCommand(client, "%t", "removedecal", COLOR_DEFAULT, COLOR_GREEN, i+1, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
+					ReplyToCommand(client, "%t", "removedecal", COLOR_DEFAULT, COLOR_GREEN, i + 1, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
 					LogAction(client, -1, "\"%L\" removed Decal \"%s\" from Map \"%s\" (Position: %f, %f, %f)", client, decalName, mapName, position[0], position[1], position[2]);
 					new DecalPos = GetConVarInt(md_pos);
 					if (DecalPos)
-						ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+						ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 					return Plugin_Handled;
 				}
-			} 
+			}
 		}
 		
 		ReplyToCommand(client, "%t", "no_decal_found", COLOR_DEFAULT, COLOR_GREEN);
@@ -318,10 +319,10 @@ public Action:Command_RemoveDecal(client, args) {
 	
 	// Remove all on current map
 	
-	if (strcmp(action ,"all", false) == 0) {
+	if (strcmp(action, "all", false) == 0) {
 		ClearArray(adt_decal_id);
 		ClearArray(adt_decal_position);
-		if (size==1)
+		if (size == 1)
 			ReplyToCommand(client, "%t", "removedecal_all_single", COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
 		else
 			ReplyToCommand(client, "%t", "removedecal_all", COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
@@ -330,17 +331,17 @@ public Action:Command_RemoveDecal(client, args) {
 	}
 	
 	// Remove last painted decal on current map
-	if (strcmp(action ,"last", false)==0) {
-		new decal = GetArrayCell(adt_decal_id, size-1);
+	if (strcmp(action, "last", false) == 0) {
+		new decal = GetArrayCell(adt_decal_id, size - 1);
 		GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
-		GetArrayArray(adt_decal_position, size-1, _:position);
-		RemoveFromArray(adt_decal_id, size-1);
-		RemoveFromArray(adt_decal_position, size-1);
+		GetArrayArray(adt_decal_position, size - 1, _:position);
+		RemoveFromArray(adt_decal_id, size - 1);
+		RemoveFromArray(adt_decal_position, size - 1);
 		ReplyToCommand(client, "%t", "removedecal", COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
 		LogAction(client, -1, "\"%L\" removed Decal \"%s\" from Map \"%s\" (Position: %f, %f, %f)", client, decalName, mapName, position[0], position[1], position[2]);
 		new DecalPos = GetConVarInt(md_pos);
 		if (DecalPos) {
-			ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+			ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 		}
 		
 		return Plugin_Handled;
@@ -352,7 +353,7 @@ public Action:Command_RemoveDecal(client, args) {
 		GetArrayString(adt_decal_names, index, decalName, sizeof(decalName));
 		new removepos = FindValueInArray(adt_decal_id, index);
 		if (removepos != -1) {
-			while(removepos != -1) {
+			while (removepos != -1) {
 				GetArrayArray(adt_decal_position, removepos, _:position);
 				RemoveFromArray(adt_decal_id, removepos);
 				RemoveFromArray(adt_decal_position, removepos);
@@ -360,15 +361,15 @@ public Action:Command_RemoveDecal(client, args) {
 				LogAction(client, -1, "\"%L\" removed Decal \"%s\" from Map \"%s\" (Position: %f, %f, %f)", client, decalName, mapName, position[0], position[1], position[2]);
 				new DecalPos = GetConVarInt(md_pos);
 				if (DecalPos) {
-					ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+					ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 				}
 				removepos = FindValueInArray(adt_decal_id, index);
 			}
-			new cursize = GetArraySize(adt_decal_id); 
+			new cursize = GetArraySize(adt_decal_id);
 			if (cursize == 0 && size > 1)
-				ReplyToCommand(client, "%t", "removedecal_names",COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
+				ReplyToCommand(client, "%t", "removedecal_names", COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
 			if (cursize > 1)
-				ReplyToCommand(client, "%t", "removedecal_names",COLOR_DEFAULT, COLOR_GREEN, size-cursize, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
+				ReplyToCommand(client, "%t", "removedecal_names", COLOR_DEFAULT, COLOR_GREEN, size - cursize, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
 			return Plugin_Handled;
 		}
 		ReplyToCommand(client, "%t", "decals_named", COLOR_DEFAULT, COLOR_GREEN, action, COLOR_DEFAULT);
@@ -384,11 +385,11 @@ public Action:Command_RemoveDecal(client, args) {
 		GetArrayArray(adt_decal_position, index, _:position);
 		RemoveFromArray(adt_decal_id, index);
 		RemoveFromArray(adt_decal_position, index);
-		ReplyToCommand(client, "%t", "removedecal", COLOR_DEFAULT, COLOR_GREEN, index+1, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
+		ReplyToCommand(client, "%t", "removedecal", COLOR_DEFAULT, COLOR_GREEN, index + 1, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
 		LogAction(client, -1, "\"%L\" removed Decal \"%s\" from Map \"%s\" (Position: %f, %f, %f)", client, decalName, mapName, position[0], position[1], position[2]);
 		new DecalPos = GetConVarInt(md_pos);
 		if (DecalPos)
-			ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+			ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 		return Plugin_Handled;
 	}
 	ReplyToCommand(client, "%t", "usage_removedecal", COLOR_DEFAULT, COLOR_GREEN, COLOR_DEFAULT);
@@ -405,18 +406,18 @@ public Action:Command_ListDecal(client, args) {
 		decl Float:pos[3];
 		if (GetClientAimTargetEx(client, pos) >= 0) {
 			new Float:MaxDis = GetConVarFloat(md_maxdis);
-			for (new i=0; i<size; ++i) {
+			for (new i = 0; i < size; ++i) {
 				GetArrayArray(adt_decal_position, i, _:position);
 				if (GetVectorDistance(pos, position) <= MaxDis) {
 					new decal = GetArrayCell(adt_decal_id, i);
 					GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
-					ReplyToCommand(client, "%t", "list_decal_id_name",COLOR_DEFAULT, COLOR_GREEN, i+1, COLOR_DEFAULT, COLOR_GREEN, decalName);
+					ReplyToCommand(client, "%t", "list_decal_id_name", COLOR_DEFAULT, COLOR_GREEN, i + 1, COLOR_DEFAULT, COLOR_GREEN, decalName);
 					new DecalPos = GetConVarInt(md_pos);
 					if (DecalPos)
-						ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+						ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 					return Plugin_Handled;
 				}
-			} 
+			}
 		}
 		ReplyToCommand(client, "%t", "no_decal_found", COLOR_DEFAULT, COLOR_GREEN);
 		return Plugin_Handled;
@@ -425,16 +426,16 @@ public Action:Command_ListDecal(client, args) {
 	// List all Decals available in config File
 	decl String:action[64];
 	GetCmdArg(1, action, sizeof(action));
-	if (strcmp(action ,"all", false) == 0) {
+	if (strcmp(action, "all", false) == 0) {
 		new nsize = GetArraySize(adt_decal_names);
-		if (nsize>0)
+		if (nsize > 0)
 			ReplyToCommand(client, "%t", "available_decals", COLOR_DEFAULT, COLOR_GREEN);
 		
 		else
 			ReplyToCommand(client, "%t", "no_decals_available", COLOR_DEFAULT, COLOR_GREEN);
-		for (new i=0; i<nsize; ++i) {
+		for (new i = 0; i < nsize; ++i) {
 			GetArrayString(adt_decal_names, i, decalName, sizeof(decalName));
-			ReplyToCommand(client, "%t", "listdecal",COLOR_DEFAULT, COLOR_GREEN, i+1, COLOR_DEFAULT, COLOR_GREEN, decalName);
+			ReplyToCommand(client, "%t", "listdecal", COLOR_DEFAULT, COLOR_GREEN, i + 1, COLOR_DEFAULT, COLOR_GREEN, decalName);
 		}
 		return Plugin_Handled;
 	}
@@ -452,15 +453,15 @@ public Action:Command_ListDecal(client, args) {
 	}
 	
 	// List last painted Decal on current Map
-	if (strcmp(action ,"last", false) == 0) {
-		new decal = GetArrayCell(adt_decal_id, size-1);
+	if (strcmp(action, "last", false) == 0) {
+		new decal = GetArrayCell(adt_decal_id, size - 1);
 		GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
-		GetArrayArray(adt_decal_position, size-1, _:position);
-		ReplyToCommand(client, "%t", "last_decal",COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT);
+		GetArrayArray(adt_decal_position, size - 1, _:position);
+		ReplyToCommand(client, "%t", "last_decal", COLOR_DEFAULT, COLOR_GREEN, size, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT);
 		
 		new DecalPos = GetConVarInt(md_pos);
 		if (DecalPos) {
-			ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+			ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 		}
 		return Plugin_Handled;
 	}
@@ -469,16 +470,16 @@ public Action:Command_ListDecal(client, args) {
 	if (FindStringInArrayCase(adt_decal_names, action, false) > -1) {
 		new status = 0;
 		ReplyToCommand(client, "%t", "decals_name_on_map", COLOR_DEFAULT, COLOR_GREEN, action, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
-		for (new i=0; i<size; ++i) {
+		for (new i = 0; i < size; ++i) {
 			new index = GetArrayCell(adt_decal_id, i);
 			GetArrayString(adt_decal_names, index, decalName, sizeof(decalName));
-			if (strcmp(action,decalName, false)==0) {
+			if (strcmp(action, decalName, false) == 0) {
 				GetArrayArray(adt_decal_position, i, _:position);
-				ReplyToCommand(client, "%t", "listdecal",COLOR_DEFAULT, COLOR_GREEN, i+1, COLOR_DEFAULT, COLOR_GREEN, decalName);
+				ReplyToCommand(client, "%t", "listdecal", COLOR_DEFAULT, COLOR_GREEN, i + 1, COLOR_DEFAULT, COLOR_GREEN, decalName);
 				status = 1;
 				new DecalPos = GetConVarInt(md_pos);
 				if (DecalPos)
-					ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+					ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 			}
 		}
 		if (!status)
@@ -487,17 +488,17 @@ public Action:Command_ListDecal(client, args) {
 	}
 	
 	// List all on current Map
-	if (strcmp(action ,"map", false)==0) {
-
+	if (strcmp(action, "map", false) == 0) {
+		
 		ReplyToCommand(client, "%t", "decals_on_map", COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
-		for (new i=0; i<size; ++i) {
+		for (new i = 0; i < size; ++i) {
 			new decal = GetArrayCell(adt_decal_id, i);
 			GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
 			GetArrayArray(adt_decal_position, i, _:position);
-			ReplyToCommand(client, "%t", "listdecal",COLOR_DEFAULT, COLOR_GREEN, i+1, COLOR_DEFAULT, COLOR_GREEN, decalName);
+			ReplyToCommand(client, "%t", "listdecal", COLOR_DEFAULT, COLOR_GREEN, i + 1, COLOR_DEFAULT, COLOR_GREEN, decalName);
 			new DecalPos = GetConVarInt(md_pos);
 			if (DecalPos) {
-				ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+				ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 			}
 		}
 		return Plugin_Handled;
@@ -505,16 +506,16 @@ public Action:Command_ListDecal(client, args) {
 	
 	// List by ID
 	new index = StringToInt(action);
-	if (index != 0 && index<=size) {
-
+	if (index != 0 && index <= size) {
+		
 		index -= 1;
 		new decal = GetArrayCell(adt_decal_id, index);
 		GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
 		GetArrayArray(adt_decal_position, index, _:position);
-		ReplyToCommand(client, "%t", "listdecal",COLOR_DEFAULT, COLOR_GREEN, index+1, COLOR_DEFAULT, COLOR_GREEN, decalName);
+		ReplyToCommand(client, "%t", "listdecal", COLOR_DEFAULT, COLOR_GREEN, index + 1, COLOR_DEFAULT, COLOR_GREEN, decalName);
 		new DecalPos = GetConVarInt(md_pos);
 		if (DecalPos)
-			ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+			ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 		return Plugin_Handled;
 	}
 	
@@ -529,8 +530,7 @@ public Action:Command_SaveDecal(client, args) {
 	decl Float:pos[3];
 	decl String:decalName[64];
 	decl String:strpos[8];
-	new n=1;
-	decl String:file[PLATFORM_MAX_PATH];
+	new n = 1;
 	new saved = 0;
 	decl index;
 	new size = GetArraySize(adt_decal_id);
@@ -539,10 +539,10 @@ public Action:Command_SaveDecal(client, args) {
 	if (GetCmdArgs() == 0) {
 		if (GetClientAimTargetEx(client, pos) >= 0) {
 			new Float:MaxDis = GetConVarFloat(md_maxdis);
-			for (new i=0; i<size; ++i) {
+			for (new i = 0; i < size; ++i) {
 				GetArrayArray(adt_decal_position, i, _:position);
 				if (GetVectorDistance(pos, position) <= MaxDis) {
-					ReplyToCommand(client, "%t", "savedecal_file",COLOR_DEFAULT, COLOR_GREEN, file, COLOR_DEFAULT);
+					ReplyToCommand(client, "%t", "savedecal_file", COLOR_DEFAULT, COLOR_GREEN, path_mapdecals, COLOR_DEFAULT);
 					new decal = GetArrayCell(adt_decal_id, i);
 					GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
 					FileToKeyValues(kv, path_mapdecals);
@@ -551,8 +551,8 @@ public Action:Command_SaveDecal(client, args) {
 						KvGetVector(kv, strpos, pos);
 						while (pos[0] != 0 && pos[1] != 0 && pos[2] != 0) {
 							if (RoundFloat(GetVectorDistance(pos, position)) == 0) {
-									saved = 1;
-									break;
+								saved = 1;
+								break;
 							}
 							n++;
 							Format(strpos, sizeof(strpos), "pos%d", n);
@@ -561,50 +561,50 @@ public Action:Command_SaveDecal(client, args) {
 						KvRewind(kv);
 					}
 					if (saved)
-						ReplyToCommand(client, "%t", "error_decal_in_file",COLOR_DEFAULT,COLOR_GREEN,COLOR_DEFAULT);
-					else{
+						ReplyToCommand(client, "%t", "error_decal_in_file", COLOR_DEFAULT, COLOR_GREEN, COLOR_DEFAULT);
+					else {
 						KvJumpToKey(kv, decalName, true);
 						Format(strpos, sizeof(strpos), "pos%d", n);
 						KvSetVector(kv, strpos, position);
 						KvRewind(kv);
 						KeyValuesToFile(kv, path_mapdecals);
-						ReplyToCommand(client, "%t", "saved_aim",COLOR_DEFAULT, COLOR_GREEN, 1, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT);
+						ReplyToCommand(client, "%t", "saved_aim", COLOR_DEFAULT, COLOR_GREEN, 1, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT);
 						new DecalPos = GetConVarInt(md_pos);
 						if (DecalPos)
-							ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
-						LogAction(client, -1, "\"%L\" saved Decal \"%s\" on Map \"%s\" (Position: %f, %f, %f)",client, decalName, mapName, position[0], position[1], position[2]);
-					}	
+							ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+						LogAction(client, -1, "\"%L\" saved Decal \"%s\" on Map \"%s\" (Position: %f, %f, %f)", client, decalName, mapName, position[0], position[1], position[2]);
+					}
 					CloseHandle(kv);
 					return Plugin_Handled;
 				}
-			} 
+			}
 		}
 		
-		ReplyToCommand(client, "%t", "no_decal_found", COLOR_DEFAULT, COLOR_GREEN); 
+		ReplyToCommand(client, "%t", "no_decal_found", COLOR_DEFAULT, COLOR_GREEN);
 		CloseHandle(kv);
 		
 		return Plugin_Handled;
 	}
 	
-	decl String:action[64];		
+	decl String:action[64];
 	// Save all on current Map to File
 	GetCmdArg(1, action, sizeof(action));
-	if (strcmp(action ,"all", false)==0) {
-		ReplyToCommand(client, "%t", "savedecals_file", COLOR_DEFAULT, COLOR_GREEN, file, COLOR_DEFAULT);
+	if (strcmp(action, "all", false) == 0) {
+		ReplyToCommand(client, "%t", "savedecals_file", COLOR_DEFAULT, COLOR_GREEN, path_mapdecals, COLOR_DEFAULT);
 		new Handle:trie = CreateTrie();
 		size = GetArraySize(adt_decal_id);
-		for (new i=0; i<size; ++i) {
+		for (new i = 0; i < size; ++i) {
 			new decal = GetArrayCell(adt_decal_id, i);
 			GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
 			GetArrayArray(adt_decal_position, i, _:position);
-		
+			
 			KvJumpToKey(kv, decalName, true);
 			Format(strpos, sizeof(strpos), "pos%d", NextPosFromTrie(trie, decalName));
 			KvSetVector(kv, strpos, position);
-		
+			
 			KvRewind(kv);
 		}
-		KeyValuesToFile(kv, file);
+		KeyValuesToFile(kv, path_mapdecals);
 		CloseHandle(kv);
 		CloseHandle(trie);
 		
@@ -626,12 +626,12 @@ public Action:Command_SaveDecal(client, args) {
 	}
 	
 	// Save last painted Decal to File
-	if (strcmp(action ,"last", false)==0) {
-		ReplyToCommand(client, "%t", "saving_last", COLOR_DEFAULT, COLOR_GREEN, file, COLOR_DEFAULT);
-		new decal = GetArrayCell(adt_decal_id, size-1);
+	if (strcmp(action, "last", false) == 0) {
+		ReplyToCommand(client, "%t", "saving_last", COLOR_DEFAULT, COLOR_GREEN, path_mapdecals, COLOR_DEFAULT);
+		new decal = GetArrayCell(adt_decal_id, size - 1);
 		GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
-		GetArrayArray(adt_decal_position, size-1, _:position);
-		FileToKeyValues(kv, file);
+		GetArrayArray(adt_decal_position, size - 1, _:position);
+		FileToKeyValues(kv, path_mapdecals);
 		if (KvJumpToKey(kv, decalName, false)) {
 			Format(strpos, sizeof(strpos), "pos%d", n);
 			KvGetVector(kv, strpos, pos);
@@ -648,18 +648,18 @@ public Action:Command_SaveDecal(client, args) {
 		}
 		if (saved)
 			ReplyToCommand(client, "%t", "error_decal_in_file", COLOR_DEFAULT, COLOR_GREEN, COLOR_DEFAULT);
-		else{
+		else {
 			KvJumpToKey(kv, decalName, true);
 			Format(strpos, sizeof(strpos), "pos%d", n);
 			KvSetVector(kv, strpos, position);
 			KvRewind(kv);
-			KeyValuesToFile(kv, file);
+			KeyValuesToFile(kv, path_mapdecals);
 			ReplyToCommand(client, "%t", "saved_last", COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT);
 			new DecalPos = GetConVarInt(md_pos);
 			if (DecalPos)
-				ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+				ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 			LogAction(client, -1, "\"%L\" saved Decal \"%s\" on Map \"%s\" (Position: %f, %f, %f)", client, decalName, mapName, position[0], position[1], position[2]);
-		}	
+		}
 		CloseHandle(kv);
 		return Plugin_Handled;
 	}
@@ -667,15 +667,15 @@ public Action:Command_SaveDecal(client, args) {
 	// Save by Name
 	new found = FindStringInArrayCase(adt_decal_names, action, false);
 	if (found > -1) {
-		GetArrayString(adt_decal_names,found, action, sizeof(action)); 
+		GetArrayString(adt_decal_names, found, action, sizeof(action));
 		new count = 0;
-		ReplyToCommand(client, "%t", "savedecals_file", COLOR_DEFAULT, COLOR_GREEN, file, COLOR_DEFAULT);
-		FileToKeyValues(kv, file);
-		for (new i=0; i<size; ++i) {
+		ReplyToCommand(client, "%t", "savedecals_file", COLOR_DEFAULT, COLOR_GREEN, path_mapdecals, COLOR_DEFAULT);
+		FileToKeyValues(kv, path_mapdecals);
+		for (new i = 0; i < size; ++i) {
 			index = GetArrayCell(adt_decal_id, i);
 			GetArrayString(adt_decal_names, index, decalName, sizeof(decalName));
-			if (strcmp(action,decalName, false)==0) {
-				GetArrayArray(adt_decal_position, i, _:position);		
+			if (strcmp(action, decalName, false) == 0) {
+				GetArrayArray(adt_decal_position, i, _:position);
 				if (KvJumpToKey(kv, decalName, false)) {
 					Format(strpos, sizeof(strpos), "pos%d", n);
 					KvGetVector(kv, strpos, pos);
@@ -699,23 +699,23 @@ public Action:Command_SaveDecal(client, args) {
 					n = 1;
 					count++;
 				}
-				else{
+				else {
 					n = 1;
 					saved = 0;
 				}
 			}
 		}
 		if (count == 1) {
-
+			
 			ReplyToCommand(client, "%t", "saved_one_name", COLOR_DEFAULT, COLOR_GREEN, count, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT);
 			new DecalPos = GetConVarInt(md_pos);
 			if (DecalPos) {
-				ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+				ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 			}
 		}
 		else
-			ReplyToCommand(client, "%t", "saved_more",COLOR_DEFAULT, COLOR_GREEN, count, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT);
-		KeyValuesToFile(kv, file);
+			ReplyToCommand(client, "%t", "saved_more", COLOR_DEFAULT, COLOR_GREEN, count, COLOR_DEFAULT, COLOR_GREEN, decalName, COLOR_DEFAULT);
+		KeyValuesToFile(kv, path_mapdecals);
 		CloseHandle(kv);
 		return Plugin_Handled;
 	}
@@ -723,13 +723,13 @@ public Action:Command_SaveDecal(client, args) {
 	// Save by ID
 	index = StringToInt(action);
 	if (index != 0 && index <= size) {
-
-		ReplyToCommand(client, "%t", "savedecal_file", COLOR_DEFAULT, COLOR_GREEN, file, COLOR_DEFAULT);
+		
+		ReplyToCommand(client, "%t", "savedecal_file", COLOR_DEFAULT, COLOR_GREEN, path_mapdecals, COLOR_DEFAULT);
 		index -= 1;
 		new decal = GetArrayCell(adt_decal_id, index);
 		GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
 		GetArrayArray(adt_decal_position, index, _:position);
-		FileToKeyValues(kv, file);
+		FileToKeyValues(kv, path_mapdecals);
 		if (KvJumpToKey(kv, decalName, false)) {
 			Format(strpos, sizeof(strpos), "pos%d", n);
 			KvGetVector(kv, strpos, pos);
@@ -751,13 +751,13 @@ public Action:Command_SaveDecal(client, args) {
 			Format(strpos, sizeof(strpos), "pos%d", n);
 			KvSetVector(kv, strpos, position);
 			KvRewind(kv);
-			KeyValuesToFile(kv, file);
-			ReplyToCommand(client, "%t", "saved_id", COLOR_DEFAULT, COLOR_GREEN, 1, COLOR_DEFAULT, COLOR_GREEN, index+1, COLOR_DEFAULT);
+			KeyValuesToFile(kv, path_mapdecals);
+			ReplyToCommand(client, "%t", "saved_id", COLOR_DEFAULT, COLOR_GREEN, 1, COLOR_DEFAULT, COLOR_GREEN, index + 1, COLOR_DEFAULT);
 			new DecalPos = GetConVarInt(md_pos);
 			if (DecalPos)
-				ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
+				ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 			LogAction(client, -1, "\"%L\" saved Decal \"%s\" from Map \"%s\" (Position: %f, %f, %f)", client, decalName, mapName, position[0], position[1], position[2]);
-		}	
+		}
 		CloseHandle(kv);
 		return Plugin_Handled;
 	}
@@ -770,11 +770,11 @@ public Action:Command_GetAimPos(client, args) {
 	
 	new Float:pos[3];
 	if (GetClientAimTargetEx(client, pos) >= 0) {
-		ReplyToCommand(client, "%t", "aimpos",COLOR_DEFAULT, COLOR_GREEN, pos[0], pos[1], pos[2]);
+		ReplyToCommand(client, "%t", "aimpos", COLOR_DEFAULT, COLOR_GREEN, pos[0], pos[1], pos[2]);
 	}
 	else {
 		ReplyToCommand(client, "%t", "error_entity", COLOR_DEFAULT, COLOR_GREEN, COLOR_DEFAULT);
-	}	
+	}
 	return Plugin_Handled;
 }
 
@@ -825,7 +825,7 @@ public Action:Command_DecalMenu(client, args) {
 }
 
 public DecalMenuHandler(Handle:menu, MenuAction:action, param1, param2) {
-
+	
 	/* If an option was selected, tell the client about the item. */
 	if (action == MenuAction_Select) {
 		decl String:info[64];
@@ -846,42 +846,42 @@ public DecalMenuHandler(Handle:menu, MenuAction:action, param1, param2) {
 	}
 	/* If the menu was cancelled, check for param and redisplay AdminMenu. */
 	else if (action == MenuAction_Cancel) {
-
+		
 		if (param2 == MenuCancel_ExitBack) {
 			RedisplayAdminMenu(hAdminMenu, param1);
 		}
 	}
 	/* If the menu has ended, destroy it */
 	else if (action == MenuAction_End) {
-
+		
 		CloseHandle(menu);
 	}
 }
 
 public bool:TraceEntityFilterPlayer(entity, contentsMask) {
 	
- 	return entity > MAXPLAYERS;
+	return entity > MAXPLAYERS;
 }
 
 // Menu Option
 public AdminMenu_MapDecals(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, param, String:buffer[], maxlength) {
-
+	
 	if (action == TopMenuAction_DisplayOption) {
-
+		
 		Format(buffer, maxlength, "%T", "admin_menu_title", param);
 	}
 	else if (action == TopMenuAction_SelectOption) {
-
+		
 		FakeClientCommand(param, "sm_decalmenu admin");
 	}
 }
 
 public SubMenuHandler(Handle:submenu, MenuAction:action, param1, param2) {
-
+	
 	decl String:info[64];
 	/* If an option was selected, tell the client about the item. */
 	if (action == MenuAction_Select) {
-
+		
 		new bool:found = GetMenuItem(submenu, param2, info, sizeof(info));
 		if (found) {
 			if (StrContains(info, "savedecal_all", false) > -1) {
@@ -968,9 +968,9 @@ public SubMenuHandler(Handle:submenu, MenuAction:action, param1, param2) {
 	
 	/* If the menu was cancelled, check for info and redisplay previous menu. */
 	else if (action == MenuAction_Cancel) {
-
+		
 		if (param2 == MenuCancel_ExitBack) {
-
+			
 			GetMenuItem(submenu, 0, info, sizeof(info));
 			if (StrContains(info, "admin", false) > -1) {
 				FakeClientCommand(param1, "sm_decalmenu admin");
@@ -982,7 +982,7 @@ public SubMenuHandler(Handle:submenu, MenuAction:action, param1, param2) {
 	}
 	/* If the menu has ended, destroy it */
 	else if (action == MenuAction_End) {
-
+		
 		CloseHandle(submenu);
 	}
 }
@@ -1012,9 +1012,9 @@ Command_SubMenu(client, String:info[]) {
 	new Handle:submenu = CreateMenu(SubMenuHandler);
 	new DecalPos = GetConVarInt(md_pos);
 	decl String:buffer[128];
-
+	
 	if (strcmp(info, "savedecal") == 0) {
-
+		
 		Format(buffer, sizeof(buffer), "%T", "save_decal_title", client);
 		SetMenuTitle(submenu, buffer);
 		Format(buffer, sizeof(buffer), "%T", "all", client);
@@ -1029,7 +1029,7 @@ Command_SubMenu(client, String:info[]) {
 		AddMenuItem(submenu, "savedecal_last", buffer);
 	}
 	else if (strcmp(info, "savedecal_admin") == 0) {
-
+		
 		Format(buffer, sizeof(buffer), "%T", "save_decal_title", client);
 		SetMenuTitle(submenu, buffer);
 		Format(buffer, sizeof(buffer), "%T", "all", client);
@@ -1044,7 +1044,7 @@ Command_SubMenu(client, String:info[]) {
 		AddMenuItem(submenu, "savedecal_last_admin", buffer);
 	}
 	else if (strcmp(info, "removedecal") == 0) {
-
+		
 		Format(buffer, sizeof(buffer), "%T", "remove_decal_title", client);
 		SetMenuTitle(submenu, buffer);
 		Format(buffer, sizeof(buffer), "%T", "all", client);
@@ -1059,7 +1059,7 @@ Command_SubMenu(client, String:info[]) {
 		AddMenuItem(submenu, "removedecal_last", buffer);
 	}
 	else if (strcmp(info, "removedecal_admin") == 0) {
-
+		
 		Format(buffer, sizeof(buffer), "%T", "remove_decal_title", client);
 		SetMenuTitle(submenu, buffer);
 		Format(buffer, sizeof(buffer), "%T", "all", client);
@@ -1074,7 +1074,7 @@ Command_SubMenu(client, String:info[]) {
 		AddMenuItem(submenu, "removedecal_last_admin", buffer);
 	}
 	else if (strcmp(info, "listdecal") == 0) {
-
+		
 		Format(buffer, sizeof(buffer), "%T", "list_decal_title", client);
 		SetMenuTitle(submenu, buffer);
 		Format(buffer, sizeof(buffer), "%T", "all_list", client);
@@ -1095,7 +1095,7 @@ Command_SubMenu(client, String:info[]) {
 		AddMenuItem(submenu, "listdecal_saved", buffer);
 	}
 	else if (strcmp(info, "listdecal_admin") == 0) {
-
+		
 		Format(buffer, sizeof(buffer), "%T", "list_decal_title", client);
 		SetMenuTitle(submenu, buffer);
 		Format(buffer, sizeof(buffer), "%T", "all_list", client);
@@ -1115,7 +1115,7 @@ Command_SubMenu(client, String:info[]) {
 		Format(buffer, sizeof(buffer), "%T", "saved", client);
 		AddMenuItem(submenu, "listdecal_saved_admin", buffer);
 	}
-
+	
 	SetMenuExitBackButton(submenu, true);
 	SetMenuExitButton(submenu, true);
 	DisplayMenu(submenu, client, MENU_TIME_FOREVER);
@@ -1132,11 +1132,11 @@ public Command_OptionsMenu(client, String:info[]) {
 	SetMenuTitle(optionsmenu, buffer);
 	if (StrContains(info, "id", false) > -1) {
 		size = GetArraySize(adt_decal_id);
-		for (new i=0; i<size; ++i) {
+		for (new i = 0; i < size; ++i) {
 			new decal = GetArrayCell(adt_decal_id, i);
 			GetArrayString(adt_decal_names, decal, decalName, sizeof(decalName));
-			if (size>7) {
-				IntToString(i+1, id, sizeof(id));
+			if (size > 7) {
+				IntToString(i + 1, id, sizeof(id));
 				StrCat(decalName, sizeof(decalName), " (");
 				StrCat(decalName, sizeof(decalName), id);
 				StrCat(decalName, sizeof(decalName), ")");
@@ -1146,10 +1146,10 @@ public Command_OptionsMenu(client, String:info[]) {
 	}
 	else {
 		size = GetArraySize(adt_decal_names);
-		for (new i=0; i<size; ++i) {
+		for (new i = 0; i < size; ++i) {
 			GetArrayString(adt_decal_names, i, decalName, sizeof(decalName));
-			if (size>7) {
-				IntToString(i+1, id, sizeof(id));
+			if (size > 7) {
+				IntToString(i + 1, id, sizeof(id));
 				StrCat(decalName, sizeof(decalName), " (");
 				StrCat(decalName, sizeof(decalName), id);
 				StrCat(decalName, sizeof(decalName), ")");
@@ -1172,14 +1172,14 @@ public Command_OptionsMenu(client, String:info[]) {
 }
 
 public OptionsMenuHandler(Handle:optionsmenu, MenuAction:action, param1, param2) {
-
+	
 	decl String:info[64];
 	decl String:name[64];
 	decl flag;
-
+	
 	/* If an option was selected, tell the client about the item. */
 	if (action == MenuAction_Select) {
-
+		
 		new bool:found = GetMenuItem(optionsmenu, param2, info, sizeof(info), flag, name, sizeof(name));
 		if (found) {
 			if (StrContains(info, "paintdecal") > -1) {
@@ -1190,7 +1190,7 @@ public OptionsMenuHandler(Handle:optionsmenu, MenuAction:action, param1, param2)
 					Command_OptionsMenu(param1, "paintdecal");
 			}
 			else if (StrContains(info, "savedecal_id") > -1) {
-				FakeClientCommand(param1, "say /savedecal %d", param2+1);
+				FakeClientCommand(param1, "say /savedecal %d", param2 + 1);
 				if (StrContains(info, "admin", false) > -1)
 					Command_OptionsMenu(param1, "savedecal_id_admin");
 				else
@@ -1204,7 +1204,7 @@ public OptionsMenuHandler(Handle:optionsmenu, MenuAction:action, param1, param2)
 					Command_OptionsMenu(param1, "savedecal_name");
 			}
 			else if (StrContains(info, "removedecal_id") > -1) {
-				FakeClientCommand(param1, "say /removedecal %d", param2+1);
+				FakeClientCommand(param1, "say /removedecal %d", param2 + 1);
 				if (StrContains(info, "admin", false) > -1)
 					Command_OptionsMenu(param1, "removedecal_id_admin");
 				else
@@ -1218,7 +1218,7 @@ public OptionsMenuHandler(Handle:optionsmenu, MenuAction:action, param1, param2)
 					Command_OptionsMenu(param1, "removedecal_name");
 			}
 			else if (StrContains(info, "listdecal_id") > -1) {
-				FakeClientCommand(param1, "say /listdecal %d", param2+1);
+				FakeClientCommand(param1, "say /listdecal %d", param2 + 1);
 				if (StrContains(info, "admin", false) > -1)
 					Command_OptionsMenu(param1, "listdecal_id_admin");
 				else
@@ -1236,9 +1236,9 @@ public OptionsMenuHandler(Handle:optionsmenu, MenuAction:action, param1, param2)
 	
 	/* If the menu was cancelled, check for info and redisplay previous menu. */
 	else if (action == MenuAction_Cancel) {
-
+		
 		if (param2 == MenuCancel_ExitBack) {
-
+			
 			GetMenuItem(optionsmenu, 0, info, sizeof(info));
 			if (StrContains(info, "paintdecal", false) > -1 && StrContains(info, "admin", false) > -1) {
 				FakeClientCommand(param1, "sm_decalmenu admin");
@@ -1246,21 +1246,21 @@ public OptionsMenuHandler(Handle:optionsmenu, MenuAction:action, param1, param2)
 			else if (StrContains(info, "paintdecal", false) > -1) {
 				Command_DecalMenu(param1, -1);
 			}
-
+			
 			if (StrContains(info, "savedecal", false) > -1 && StrContains(info, "admin", false) > -1) {
 				Command_SubMenu(param1, "savedecal_admin");
 			}
 			else if (StrContains(info, "savedecal", false) > -1) {
 				Command_SubMenu(param1, "savedecal");
 			}
-
+			
 			if (StrContains(info, "removedecal", false) > -1 && StrContains(info, "admin", false) > -1) {
 				Command_SubMenu(param1, "removedecal_admin");
 			}
 			else if (StrContains(info, "removedecal", false) > -1) {
 				Command_SubMenu(param1, "removedecal");
 			}
-
+			
 			if (StrContains(info, "listdecal", false) > -1 && StrContains(info, "admin", false) > -1) {
 				Command_SubMenu(param1, "listdecal_admin");
 			}
@@ -1286,18 +1286,18 @@ public bool:ReadDecals(client, mode) {
 	
 	// Read Decal config File
 	if (mode == READ) {
-
+		
 		kv = CreateKeyValues("Decals");
 		FileToKeyValues(kv, path_decals);
-
+		
 		if (!KvGotoFirstSubKey(kv)) {
-
+			
 			LogMessage("CFG File not found: %s", file);
 			CloseHandle(kv);
 			return false;
 		}
 		do {
-
+			
 			KvGetSectionName(kv, buffer, sizeof(buffer));
 			PushArrayString(adt_decal_names, buffer);
 			KvGetString(kv, "path", buffer, sizeof(buffer));
@@ -1320,16 +1320,16 @@ public bool:ReadDecals(client, mode) {
 	// Read Map config File
 	kv = CreateKeyValues("Positions");
 	FileToKeyValues(kv, path_mapdecals);
-
+	
 	if (!KvGotoFirstSubKey(kv)) {
-
+		
 		if (mode == READ) {
 			LogMessage("CFG File for Map %s not found", mapName);
 		}
 		else {
 			ReplyToCommand(client, "%t", "cfg_file_not_found", COLOR_DEFAULT, COLOR_GREEN, COLOR_DEFAULT, COLOR_GREEN, mapName, COLOR_DEFAULT);
 		}
-
+		
 		CloseHandle(kv);
 		return false;
 	}
@@ -1337,14 +1337,14 @@ public bool:ReadDecals(client, mode) {
 		KvGetSectionName(kv, buffer, sizeof(buffer));
 		new id = FindStringInArray(adt_decal_names, buffer);
 		if (id != -1) {
-
+			
 			if (mode == LIST) {
 				ReplyToCommand(client, "%t", "list_decal", COLOR_DEFAULT, COLOR_GREEN, buffer);
 			}
-
+			
 			new Float:position[3];
 			decl String:strpos[8];
-			new n=1;
+			new n = 1;
 			Format(strpos, sizeof(strpos), "pos%d", n);
 			KvGetVector(kv, strpos, position);
 			while (position[0] != 0 && position[1] != 0 && position[2] != 0) {
@@ -1357,12 +1357,12 @@ public bool:ReadDecals(client, mode) {
 					ReplyToCommand(client, "%t", "list_decal_id", COLOR_DEFAULT, COLOR_GREEN, n);
 					new DecalPos = GetConVarInt(md_pos);
 					if (DecalPos)
-						ReplyToCommand(client, "%t", "decal_position",COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);		
+						ReplyToCommand(client, "%t", "decal_position", COLOR_DEFAULT, COLOR_GREEN, position[0], position[1], position[2]);
 				}
 				n++;
 				Format(strpos, sizeof(strpos), "pos%d", n);
 				KvGetVector(kv, strpos, position);
-			}	
+			}
 		}
 	} while (KvGotoNextKey(kv));
 	CloseHandle(kv);
@@ -1372,17 +1372,17 @@ public bool:ReadDecals(client, mode) {
 TE_SetupBSPDecal(const Float:vecOrigin[3], entity, index) {
 	
 	TE_Start("BSP Decal");
-	TE_WriteVector("m_vecOrigin",vecOrigin);
-	TE_WriteNum("m_nEntity",entity);
-	TE_WriteNum("m_nIndex",index);
+	TE_WriteVector("m_vecOrigin", vecOrigin);
+	TE_WriteNum("m_nEntity", entity);
+	TE_WriteNum("m_nIndex", index);
 }
 
-FindStringInArrayCase(Handle:array, const String:item[], bool:caseSensitive=true) {
+FindStringInArrayCase(Handle:array, const String:item[], bool:caseSensitive = true) {
 	
 	decl String:str[256];
 	new size = GetArraySize(array);
-	for (new i=0; i<size; ++i) {
-
+	for (new i = 0; i < size; ++i) {
+		
 		GetArrayString(array, i, str, sizeof(str));
 		if (strcmp(str, item, caseSensitive) == 0) {
 			return i;
@@ -1392,14 +1392,14 @@ FindStringInArrayCase(Handle:array, const String:item[], bool:caseSensitive=true
 }
 
 GetClientAimTargetEx(client, Float:pos[3]) {
-
+	
 	if (client < 1) {
 		return -1;
 	}
-
+	
 	decl Float:vAngles[3], Float:vOrigin[3];
 	
-	GetClientEyePosition(client,vOrigin);
+	GetClientEyePosition(client, vOrigin);
 	GetClientEyeAngles(client, vAngles);
 	
 	new Handle:trace = TR_TraceRayFilterEx(vOrigin, vAngles, MASK_ALL, RayType_Infinite, TraceEntityFilterPlayer);
