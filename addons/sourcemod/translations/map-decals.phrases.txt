@@ -4,347 +4,408 @@
 	{
 		"#format"	"{1:c},{2:c},{3:c}"
 		"en"			"{1}[SM] {2}Usage: {3}sm_paintdecal <decalname | id>"
+		"ru"			"{1}[SM] {2}Использование: {3}sm_paintdecal <имянаклейки | id>"
 		"de"			"{1}[SM] {2}Anwendung: {3}sm_paintdecal <decalname | id>"
 	}
 	"error_decal_not_found"
 	{
 		"#format"	"{1:c},{2:c},{3:c},{4:c},{5:s},{6:c}"
 		"en"			"{1}[SM] {2}Error: {3}Decal {4}{5} {6}not found in list."
+		"ru"			"{1}[SM] {2}Ошибка: {3}Наклейка {4}{5} {6}не в списке."
 		"de"			"{1}[SM] {2}Fehler: {3}Decal {4}{5} {6}konnte in der Liste nicht gefunden werden."
 	}
 	"error_another_decal"
 	{
 		"#format"	"{1:c},{2:c},{3:c}"
 		"en"			"{1}[SM] {2}Error: {3}Another Decal is already painted on this position!"
+		"ru"			"{1}[SM] {2}Ошибка: {3}На этой позиции уже нарисована другая наклейка!"
 		"de"			"{1}[SM] {2}Fehler: {3}Ein anderes Decal befindet sich bereits an dieser Position!"
 	}
 	"paintdecal_aim"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c},{8:c},{9:s},{10:c}"
 		"en"			"{1}[SM] Decal {2}{3}{4}: {5}{6}{7} painted on Map {8}{9}{10}!"
+		"ru"			"{1}[SM] Наклейка {2}{3}{4}: {5}{6}{7} нарисована на карте {8}{9}{10}!"
 		"de"			"{1}[SM] Decal {2}{3}{4}: {5}{6}{7} angebracht auf Map {8}{9}{10}!"
 	}
 	"decal_position"
 	{
 		"#format"	"{1:c},{2:c},{3:f},{4:f},{5:f}"
 		"en"			"{1}[SM] Decal Position: {2}{3}, {4}, {5}"
+		"ru"			"{1}[SM] Расположение наклейки: {2}{3}, {4}, {5}"
 		"de"			"{1}[SM] Decal Position: {2}{3}, {4}, {5}"
 	}
 	"error_entity"
 	{
 		"#format"	"{1:c},{2:c},{3:c}"
 		"en"			"{1}[SM] {2}Error: {3}No Solid Entity found!"
+		"ru"			"{1}[SM] {2}Ошибка: {3}Твёрдая поверхность не обнаружена!"
 		"de"			"{1}[SM] {2}Error: {3}Keinen Festkörper gefunden!"
 	}
 	"no_decal"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] No Decals available on {2}{3}{4}."
+		"ru"			"{1}[SM] Наклейки отсутствуют на {2}{3}{4}."
 		"de"			"{1}[SM] Keine Decals verfügbar auf {2}{3}{4}."
 	}
 	"removedecal"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c},{8:c},{9:s},{10:c}"
 		"en"			"{1}[SM] Decal {2}{3}{4}: {5}{6}{7} removed from Map {8}{9}{10}."
+		"ru"			"{1}[SM] Наклейка {2}{3}{4}: {5}{6}{7} удалена с карты {8}{9}{10}."
 		"de"			"{1}[SM] Decal {2}{3}{4}: {5}{6}{7} entfernt von Map {8}{9}{10}."
 	}
 	"no_decal_found"
 	{
 		"#format"	"{1:c},{2:c}"
 		"en"			"{1}[SM] {2}No Decal found on where you are looking at."
+		"ru"			"{1}[SM] {2}На том месте, куда вы смотрите, не найдено ни одной наклейки."
 		"de"			"{1}[SM] {2}Kein Decal im Zielbereich gefunden."
 	}
 	"removedecal_all_single"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] {2}{3} {4}Decal removed from Map {5}{6}{7}."
+		"ru"			"{1}[SM] {2}{3} {4}Наклейка удалена с карты {5}{6}{7}."
 		"de"			"{1}[SM] {2}{3} {4}Decal entfernt von Map {5}{6}{7}."
 	}
 	"removedecal_all"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] {2}{3} {4}Decals removed from Map {5}{6}{7}."
+		"ru"			"{1}[SM] {2}{3} {4}Наклеек удалено с карты {5}{6}{7}."
 		"de"			"{1}[SM] {2}{3} {4}Decals entfernt von Map {5}{6}{7}."
 	}
 	"removedecal_name"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] Decal {2}{3}{4} removed from Map {5}{6}{7}."
+		"ru"			"{1}[SM] Наклейка: {2}{3}{4} удалена с карты {5}{6}{7}."
 		"de"			"{1}[SM] Decal {2}{3}{4} entfernt von Map {5}{6}{7}."
 	}
 	"removedecal_names"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] {2}{3} {4}Decals removed from Map {5}{6}{7}."
+		"ru"			"{1}[SM] {2}{3} {4}Наклеек удалено с карты {5}{6}{7}."
 		"de"			"{1}[SM] {2}{3} {4}Decals entfernt von Map {5}{6}{7}."
 	}
 	"decals_named"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] No Decals named {2}{3}{4} found on Map."
+		"ru"			"{1}[SM] На карте не найдено наклеек с именем {2}{3}{4}."
 		"de"			"{1}[SM] Keine Decals namens {2}{3}{4} auf Map gefunden."
 	}
 	"usage_removedecal"
 	{
 		"#format"	"{1:c},{2:c},{3:c}"
 		"en"			"{1}[SM] {2}Usage: {3}sm_removedecal [all | id | last | name]"
+		"ru"			"{1}[SM] {2}Использование: {3}sm_removedecal [all | id | last | name]"
 		"de"			"{1}[SM] {2}Anwendung: {3}sm_removedecal [all | id | last | name]"
 	}
 	"available_decals"
 	{
 		"#format"	"{1:c},{2:c}"
 		"en"			"{1}[SM] {2}Available Decals:"
+		"ru"			"{1}[SM] {2}Доступные наклейки:"
 		"de"			"{1}[SM] {2}Verfügbare Decals:"
 	}
 	"no_decals_available"
 	{
 		"#format"	"{1:c},{2:c}"
 		"en"			"{1}[SM] {2}No Decals available."
+		"ru"			"{1}[SM] {2}Нет доступных наклеек."
 		"de"			"{1}[SM] {2}Keine Decals verfügbar."
 	}
 	"listdecal"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s}"
 		"en"			"{1}[SM] Decal {2}{3}{4}: {5}{6}"
+		"ru"			"{1}[SM] Наклейка {2}{3}{4}: {5}{6}"
 		"de"			"{1}[SM] Decal {2}{3}{4}: {5}{6}"
 	}
 	"decals_file"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] Decals in File {2}{3}.cfg{4}:"
+		"ru"			"{1}[SM] Наклейки в файле {2}{3}.cfg{4}:"
 		"de"			"{1}[SM] Decals in Datei {2}{3}.cfg{4}:"
 	}
 	"last_decal"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] Last painted Decal {2}{3}{4}: {5}{6}{7}"
+		"ru"			"{1}[SM] Последняя нарисованная наклейка {2}{3}{4}: {5}{6}{7}"
 		"de"			"{1}[SM] Zuletzt angebrachtes Decal {2}{3}{4}: {5}{6}{7}"
 	}
 	"decals_name_on_map"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] Decals {2}{3}{4} on Map {5}{6}{7}:"
+		"ru"			"{1}[SM] Наклеек {2}{3}{4} на карте {5}{6}{7}:"
 		"de"			"{1}[SM] Decals {2}{3}{4} auf Map {5}{6}{7}:"
 	}
 	"decals_on_map"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] Decals on Map {2}{3}{4}:"
+		"ru"			"{1}[SM] Наклеек на карте {2}{3}{4}:"
 		"de"			"{1}[SM] Decals auf Map {2}{3}{4}:"
 	}
 	"usage_listdecal"
 	{
 		"#format"	"{1:c},{2:c},{3:c}"
 		"en"			"{1}[SM] {2}Usage: {3}sm_listdecal [all | id | last | map | name | saved]"
+		"ru"			"{1}[SM] {2}Использование: {3}sm_listdecal [all | id | last | карта | имя | saved]"
 		"de"			"{1}[SM] {2}Anwendung: {3}sm_listdecal [all | id | last | map | name | saved]"
 	}
 	"savedecal_file"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] Saving Decal to File {2}{3}{4}..."
+		"ru"			"{1}[SM] Сохранение наклейки в файл {2}{3}{4}..."
 		"de"			"{1}[SM] Speichere Decal in Datei {2}{3}{4}..."
 	}
 	"error_decal_in_file"
 	{
 		"#format"	"{1:c},{2:c},{3:c}"
 		"en"			"{1}[SM] {2}Error: {3}Decal position already found in File."
+		"ru"			"{1}[SM] {2}Ошибка: {3}Положение наклейки уже найдено в файле."
 		"de"			"{1}[SM] {2}Fehler: {3}Decal Position bereits in Datei vorhanden."
 	}
 	"saved_aim"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] Saved {2}{3}{4} Decal Position (Name = {5}{6}{7})."
+		"ru"			"{1}[SM] Сохранено положение наклейки {2}{3}{4} (Имя = {5}{6}{7})."
 		"de"			"{1}[SM] {2}{3}{4} Decal Position gespeichert (Name = {5}{6}{7})."
 	}
 	"savedecals_file"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] Saving Decals to File {2}{3}{4}..."
+		"ru"			"{1}[SM] Сохранение наклеек в файл {2}{3}{4}..."
 		"de"			"{1}[SM] Speichere Decals in Datei {2}{3}{4}..."
 	}
 	"saved_one"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c}"
 		"en"			"{1}[SM] Saved {2}{3}{4} Decal Position."
+		"ru"			"{1}[SM] Сохранено положение наклейки {2}{3}{4}."
 		"de"			"{1}[SM] {2}{3}{4} Decal Position gespeichert."
 	}
 	"saved_more"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c}"
 		"en"			"{1}[SM] Saved {2}{3}{4} Decal Positions."
+		"ru"			"{1}[SM] Сохранено положение наклеек {2}{3}{4}."
 		"de"			"{1}[SM] {2}{3}{4} Decal Positionen gespeichert."
 	}
 	"no_decals_available_map"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] No Decals available on Map {2}{3}{4}."
+		"ru"			"{1}[SM] На карте нет наклеек, доступных для {2}{3}{4}."
 		"de"			"{1}[SM] Keine Decals verfügbar auf Map {2}{3}{4}."
 	}
 	"saving_last"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] Saving last painted Decal to File {2}{3}{4}..."
+		"ru"			"{1}[SM] Сохранение последней нарисованной наклейки в файл {2}{3}{4}..."
 		"de"			"{1}[SM] Speichere letzte Decal Position in Datei {2}{3}{4}..."
 	}
 	"saved_last"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] Saved last painted Decal Position (Name = {2}{3}{4})."
+		"ru"			"{1}[SM] Сохранено положение последней нарисованной наклейки (Имя = {2}{3}{4})."
 		"de"			"{1}[SM] Letzte Decal Position gespeichert (Name = {2}{3}{4})."
 	}
 	"saved_one_name"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] Saved {2}{3}{4} Decal Position (Name = {5}{6}{7})."
+		"ru"			"{1}[SM] Saved {2}{3}{4} Decal Position (Name = {5}{6}{7})."
 		"de"			"{1}[SM] {2}{3}{4} Decal Position gespeichert (Name = {5}{6}{7})."
 	}
 	"saved_more_name"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s},{7:c}"
 		"en"			"{1}[SM] Saved {2}{3}{4} Decal Positions (Name = {5}{6}{7})."
+		"ru"			"{1}[SM] Сохранены положения наклейки {2}{3}{4} (Имя = {5}{6}{7})."
 		"de"			"{1}[SM] {2}{3}{4} Decal Positionen gespeichert (Name = {5}{6}{7})."
 	}
 	"saved_id"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:d},{7:c}"
 		"en"			"{1}[SM] Saved {2}{3}{4} Decal Position (ID = {5}{6}{7})."
+		"ru"			"{1}[SM] Сохранено положение наклейки {2}{3}{4} (ID = {5}{6}{7})."
 		"de"			"{1}[SM] {2}{3}{4} Decal Position gespeichert (ID = {5}{6}{7})."
 	}
 	"usage_savedecal"
 	{
 		"#format"	"{1:c},{2:c},{3:c}"
 		"en"			"{1}[SM] {2}Usage: {3}sm_savedecal [all | id | last | name ]"
+		"ru"			"{1}[SM] {2}Использование: {3}sm_savedecal [all | id | last | имя ]"
 		"de"			"{1}[SM] {2}Anwendung: {3}sm_savedecal [all | id | last | name ]"
 	}
 	"aimpos"
 	{
 		"#format"	"{1:c},{2:c},{3:f},{4:f},{5:f}"
 		"en"			"{1}[SM] Position you are aiming at: {2}{3}, {4}, {5}"
+		"ru"			"{1}[SM] Позиция, на которую вы смотрите: {2}{3}, {4}, {5}"
 		"de"			"{1}[SM] Zielposition: {2}{3}, {4}, {5}"
 	}
 	"cfg_file_not_found"
 	{
 		"#format"	"{1:c},{2:c},{3:c},{4:c},{5:s},{6:c}"
 		"en"			"{1}[SM] {2}Error: {3}Decal CFG File for Map {4}{5}{6} not found!"
+		"ru"			"{1}[SM] {2}Ошибка: {3}CFG-файл наклейки для карты {4}{5}{6} не найден!"
 		"de"			"{1}[SM] {2}Fehler: {3}Decal CFG Datei für Map {4}{5}{6} konnte nicht gefunden werden!"
 	}
 	"list_decal"
 	{
 		"#format"	"{1:c},{2:c},{3:s}"
 		"en"			"{1}[SM] Decal: {2}{3}"
+		"ru"			"{1}[SM] Наклейка: {2}{3}"
 		"de"			"{1}[SM] Decal: {2}{3}"
 	}
 	"list_decal_id"
 	{
 		"#format"	"{1:c},{2:c},{3:d}"
 		"en"			"{1}[SM] Decal ID: {2}{3}"
+		"ru"			"{1}[SM] ID наклейки: {2}{3}"
 		"de"			"{1}[SM] Decal ID: {2}{3}"
 	}
 	"list_decal_id_name"
 	{
 		"#format"	"{1:c},{2:c},{3:d},{4:c},{5:c},{6:s}"
 		"en"			"{1}[SM] Decal {2}{3}{4}: {5}{6}"
+		"ru"			"{1}[SM] Наклейка {2}{3}{4}: {5}{6}"
 		"de"			"{1}[SM] Decal {2}{3}{4}: {5}{6}"
 	}
 	"no_decals_in_file"
 	{
 		"#format"	"{1:c},{2:c},{3:s},{4:c}"
 		"en"			"{1}[SM] No Decals in File {2}{3}.cfg{4}."
+		"ru"			"{1}[SM] Нет наклеек в файле {2}{3}.cfg{4}."
 		"de"			"{1}[SM] Keine Decals in Datei {2}{3}.cfg{4}."
 	}
 	"decal_menu_title"
 	{
 		"en"			"Map Decals:"
+		"ru"			"Наклейки на карте:"
 		"de"			"Map Decals:"
 	}
 	"save_decal_title"
 	{
 		"en"			"Save Decal:"
+		"ru"			"Сохранить наклейку:"
 		"de"			"Decal speichern:"
 	}
 	"remove_decal_title"
 	{
 		"en"			"Remove Decal:"
+		"ru"			"Удалить наклейку:"
 		"de"			"Decal entfernen:"
 	}
 	"list_decal_title"
 	{
 		"en"			"List Decal:"
+		"ru"			"Список наклеек:"
 		"de"			"Decal auflisten:"
 	}
 	"options_menu_title"
 	{
 		"en"			"Choose an Option:"
+		"ru"			"Выберите вариант:"
 		"de"			"Eine Option wählen:"
 	}
 	"admin_menu_title"
 	{
 		"en"			"Map Decals"
+		"ru"			"Наклейки на карте"
 		"de"			"Map Decals"
 	}
 	"paint_decal"
 	{
 		"en"			"Paint Decal"
+		"ru"			"Нарисовать наклейку"
 		"de"			"Decal anbringen"
 	}
 	"remove_decal"
 	{
 		"en"			"Remove Decal"
+		"ru"			"Удалить наклейку"
 		"de"			"Decal entfernen"
 	}
 	"list_decal_menu"
 	{
 		"en"			"List Decal"
+		"ru"			"Список наклеек"
 		"de"			"Decal auflisten"
 	}
 	"save_decal"
 	{
 		"en"			"Save Decal"
+		"ru"			"Сохранить наклейку"
 		"de"			"Decal speichern"
 	}
 	"aim_position_menu"
 	{
 		"en"			"Aim Position"
+		"ru"			"Положение прицела"
 		"de"			"Zielposition"
 	}
 	"all"
 	{
 		"en"			"All"
+		"ru"			"Все"
 		"de"			"Alle"
 	}
 	"all_list"
 	{
 		"en"			"All Decal Names available"
+		"ru"			"Все доступные имена наклеек"
 		"de"			"Alle verfügbaren Decalbezeichnungen"
 	}
 	"by_aim"
 	{
 		"en"			"By Aim Position"
+		"ru"			"По положению прицела"
 		"de"			"Im Zielfeld"
 	}
 	"by_id"
 	{
 		"en"			"By ID (from List)"
+		"ru"			"По ID (из списка)"
 		"de"			"Wähle ID (aus Liste)"
 	}
 	"by_name"
 	{
 		"en"			"By Name (from List)"
+		"ru"			"По имени (из списка)"
 		"de"			"Wähle Namen (aus Liste)"
 	}
 	"last_painted"
 	{
 		"en"			"Last Painted"
+		"ru"			"Последняя покраска"
 		"de"			"Zuletzt angebrachtes Decal"
 	}
 	"map"
 	{
 		"en"			"Map"
+		"ru"			"Карта"
 		"de"			"Map"
 	}
 	"saved"
 	{
 		"en"			"Saved"
+		"ru"			"Сохранено"
 		"de"			"Gespeicherte"
 	}
 }
